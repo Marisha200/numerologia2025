@@ -66,13 +66,18 @@
 
         <!-- SECTION 2: Results View (Initially Hidden) -->
         <section id="results-section" class="hidden-section">
-            <div class="text-center mb-10">
-                 <h2 class="text-3xl font-bold text-gray-800">Tu Mapa Numerológico</h2>
-                 <p class="text-gray-600 mt-2">Estos son los números que definen tu energía y tu camino.</p>
-            </div>
-            
-            <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- All results will be inserted here -->
+            <div id="pdf-content">
+                <div class="text-center mb-10">
+                     <h2 class="text-3xl font-bold text-gray-800">Tu Mapa Numerológico</h2>
+                     <p class="text-gray-600 mt-2">Estos son los números que definen tu energía y tu camino.</p>
+                </div>
+                
+                <!-- User Info Display Block -->
+                <div id="user-info-display" class="mb-8"></div>
+                
+                <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- All results will be inserted here -->
+                </div>
             </div>
 
             <div class="text-center mt-10 flex flex-col sm:flex-row justify-center items-center gap-6">
@@ -512,7 +517,9 @@
             
             const birthDate = new Date(birthDateStr);
             const resultsGrid = document.getElementById('results-grid');
+            const userInfoDisplay = document.getElementById('user-info-display');
             resultsGrid.innerHTML = '';
+            userInfoDisplay.innerHTML = '';
 
             // --- Perform all calculations ---
             const lifePath = calculateLifePath(birthDate);
@@ -521,6 +528,18 @@
             const expression = calculateExpressionNumber(fullName);
             const strength = calculateStrengthNumber(lifePath.value, expression.value);
             const personalYear = calculatePersonalYear(birthDate);
+
+            // --- Display User Info ---
+            const day = birthDate.getUTCDate();
+            const month = birthDate.getUTCMonth() + 1;
+            const year = birthDate.getUTCFullYear();
+            const formattedDate = `${day}/${month}/${year}`;
+            userInfoDisplay.innerHTML = `
+                <div class="bg-white rounded-2xl shadow p-4 text-center">
+                    <p class="text-lg text-gray-700"><strong>Nombre:</strong> ${fullName}</p>
+                    <p class="text-lg text-gray-700"><strong>Fecha de Nacimiento:</strong> ${formattedDate}</p>
+                </div>
+            `;
 
             // --- Card Generation ---
             const allResults = [
@@ -569,7 +588,7 @@
         }
 
         function saveAsPDF() {
-            const element = document.getElementById('results-section');
+            const element = document.getElementById('pdf-content');
             const fullName = document.getElementById('fullName').value || 'Usuario';
             const fileName = `Mapa_Numerologico_de_${fullName.replace(/ /g, '_')}.pdf`;
 
@@ -580,13 +599,8 @@
               html2canvas:  { scale: 2, useCORS: true },
               jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-
-            // Temporarily show the element to render it, then hide it again.
-            element.style.display = 'block';
-            html2pdf().set(opt).from(element).save().then(() => {
-                // This ensures the element is hidden again after PDF is saved
-                // but since we are in the results view, we just leave it.
-            });
+            
+            html2pdf().set(opt).from(element).save();
         }
     </script>
 
