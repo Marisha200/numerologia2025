@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App de Numerología</title>
     
+    <!-- html2pdf.js CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -72,7 +75,10 @@
                 <!-- All results will be inserted here -->
             </div>
 
-            <div class="text-center mt-10">
+            <div class="text-center mt-10 flex flex-col sm:flex-row justify-center items-center gap-6">
+                <button onclick="saveAsPDF()" class="text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:bg-gradient-to-l font-bold rounded-lg text-md px-6 py-3 transition-all">
+                    ↓ Guardar en PDF
+                </button>
                 <button onclick="goBack()" class="text-indigo-600 font-semibold">← Volver a calcular</button>
             </div>
         </section>
@@ -250,7 +256,7 @@
                 tip: "Asume roles de liderazgo y gestión. Viste para el éxito, con ropa de calidad que refleje tu ambición. Practica la generosidad, tanto con tu dinero como reconociendo el trabajo de tu equipo; esto demuestra un liderazgo magnánimo. Aprende a delegar para no sobrecargarte y para empoderar a otros. Asegúrate de equilibrar tu vida profesional con tus relaciones personales."
             },
             9: {
-                meaning: "Tu Número de Personalidad 9 te presenta como una persona compasiva, carismática y con una visión global. La gente te percibe como un alma vieja, alguien sabio, tolerante y con un profundo interés por el bienestar de la humanidad. Proyectas una energía magnética y un aire de artista o filántropo. Tu estilo suele ser ecléctico y sin prejuicios. Los demás se sienten atraídos por tu idealismo y tu capacidad para comprender diferentes culturas. Eres visto como alguien generoso.",
+                meaning: "Tu Número de Personalidad 9 te presenta como una persona compasiva, carismática y con una visión global. La gente te percibe como un alma vieja, alguien sabio, tolerante y con un profundo interés por el bienestar de la humanidad. Proyectas una energía magnética y un aire de artista o filántropo. Tu estilo suele ser eclético y sin prejuicios. Los demás se sienten atraídos por tu idealismo y tu capacidad para comprender diferentes culturas. Eres visto como alguien generoso.",
                 lightAndShadow: "En luz, tu personalidad es encantadora, inspiradora y universalmente atractiva. Eres visto como un líder humanitario. En sombra, puedes parecer dramático, emocionalmente distante o un soñador poco práctico. Tu idealismo puede ser percibido como una falta de realismo, y puedes dar la impresión de estar 'por encima' de las preocupaciones mundanas. A veces, puedes parecer un poco inaccesible.",
                 tip: "Involúcrate en causas sociales o artísticas que te permitan expresar tu visión humanitaria. Viste de una manera que refleje tu espíritu creativo y universal. Viaja y aprende sobre diferentes culturas. Comparte tu sabiduría y compasión, pero aprende a establecer límites para no absorber el dolor del mundo. Practica el desapego. Tu carisma es un don; úsalo para inspirar cambios positivos."
             },
@@ -560,6 +566,27 @@
                 document.getElementById('input-section').classList.replace('hidden-section', 'visible-section');
                 window.scrollTo(0, 0);
             }, 100);
+        }
+
+        function saveAsPDF() {
+            const element = document.getElementById('results-section');
+            const fullName = document.getElementById('fullName').value || 'Usuario';
+            const fileName = `Mapa_Numerologico_de_${fullName.replace(/ /g, '_')}.pdf`;
+
+            const opt = {
+              margin:       [0.5, 0.5, 0.5, 0.5],
+              filename:     fileName,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Temporarily show the element to render it, then hide it again.
+            element.style.display = 'block';
+            html2pdf().set(opt).from(element).save().then(() => {
+                // This ensures the element is hidden again after PDF is saved
+                // but since we are in the results view, we just leave it.
+            });
         }
     </script>
 
